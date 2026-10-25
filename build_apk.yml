@@ -1,0 +1,44 @@
+name: Otomatik Android APK Derle (Release)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Flutter Android APK Oluştur
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kod Deposunu Çek (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Java 17 Kurulumu
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Flutter SDK Kurulumu
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          channel: 'stable'
+          cache: true
+
+      - name: Flutter Paketlerini İndir
+        run: flutter pub get
+
+      - name: Kod Üreticileri Çalıştır (Build Runner)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Android Release APK Derle (Fat APK & Per-ABI)
+        run: flutter build apk --release
+
+      - name: Üretilen APK Dosyasını İndirmeye Hazırla
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabrika-bakim-cmms-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
