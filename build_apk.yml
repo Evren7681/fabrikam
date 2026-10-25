@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Kod Deposunu Çek (Checkout)
+      - name: Kod Deposunu Çek
         uses: actions/checkout@v4
 
       - name: Java 17 Kurulumu
@@ -27,18 +27,18 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Eksik Android Klasörünü Otomatik Oluştur
+        run: |
+          flutter create . --platforms=android --org=com.fabrika.cmms
+
       - name: Flutter Paketlerini İndir
         run: flutter pub get
 
-      - name: Kod Üreticileri Çalıştır (Build Runner)
-        run: dart run build_runner build --delete-conflicting-outputs
-
-      - name: Android Release APK Derle (Fat APK & Per-ABI)
+      - name: Android Release APK Derle
         run: flutter build apk --release
 
-      - name: Üretilen APK Dosyasını İndirmeye Hazırla
+      - name: APK Dosyasını Yükle
         uses: actions/upload-artifact@v4
         with:
           name: fabrika-bakim-cmms-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
