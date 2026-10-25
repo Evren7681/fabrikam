@@ -27,15 +27,17 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Eksik Android Klasörünü Otomatik Oluştur
+      - name: Klasör Yapısını Otomatik Düzelt
         run: |
+          mkdir -p lib
+          if [ -f "main.dart" ]; then mv main.dart lib/; fi
           flutter create . --platforms=android --org=com.fabrika.cmms
 
-      - name: Flutter Paketlerini İndir
+      - name: Bağımlılıkları İndir
         run: flutter pub get
 
       - name: Android Release APK Derle
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: APK Dosyasını Yükle
         uses: actions/upload-artifact@v4
